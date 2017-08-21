@@ -1,0 +1,35 @@
+{
+  "name": "@umm/simple_build",
+  "version": "1.0.0",
+  "description": "Provide BuildPlayer menu",
+  "homepage": "https://github.com/umm-projects/simple_build_",
+  "bugs": {
+    "url": "https://github.com/umm-projects/simple_build_/issues"
+  },
+  "scripts": {
+    "postinstall": "node scripts/postinstall.js",
+    "postuninstall": "node scripts/postuninstall.js",
+    "build:test": "tar -tf $(npm pack -s) && $(npm bin)/rimraf $_"
+  },
+  "author": {
+    "name": "Tetsuya Mori",
+    "email": "monry84@gmail.com",
+    "url": "https://github.com/monry"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:umm-projects/simple_build_"
+  },
+  "files": [
+    "Assets",
+    "scripts"
+  ],
+  "dependencies": {
+    "glob": "^7.1.2",
+    "mkdirp": "^0.5.1",
+    "ncp": "^2.0.0",
+    "rimraf": "^2.6.1"
+  },
+  "devDependencies": {}
+}
