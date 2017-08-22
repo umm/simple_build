@@ -38,7 +38,7 @@ namespace SimpleBuild {
         /// ビルドを実行する
         /// </summary>
         /// <remarks>アクティブビルドターゲットでのビルドを行う</remarks>
-        [MenuItem("Project/Build AssetBundle")]
+        [MenuItem("Project/Build/AssetBundle")]
         public static void Run() {
             new BuildAssetBundle().Execute();
         }

@@ -44,7 +44,7 @@ namespace SimpleBuild {
         /// ビルドを実行する
         /// </summary>
         /// <remarks>アクティブビルドターゲットでのビルドを行う</remarks>
-        [MenuItem("Project/Build Player")]
+        [MenuItem("Project/Build/Player")]
         public static void Run() {
             new BuildPlayer().Execute();
         }
