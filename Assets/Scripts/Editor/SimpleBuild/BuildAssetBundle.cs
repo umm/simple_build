@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using UnityEditor;
 using UnityEngine;
 
@@ -13,6 +14,22 @@ namespace SimpleBuild {
         /// 出力先パスフォーマット
         /// </summary>
         private const string OUTPUT_PATH_FORMAT = "Assets/AssetBundles/{0}";
+
+        /// <summary>
+        /// ビルドターゲットと出力先ディレクトリの辞書
+        /// </summary>
+        private static readonly Dictionary<BuildTarget, string> OUTPUT_DIRECTORY_MAP = new Dictionary<BuildTarget, string>() {
+            { BuildTarget.iOS                     , "iOS" },
+            { BuildTarget.Android                 , "Android" },
+            { BuildTarget.StandaloneWindows       , "Standalone" },
+            { BuildTarget.StandaloneWindows64     , "Standalone" },
+            { BuildTarget.StandaloneOSXIntel      , "Standalone" },
+            { BuildTarget.StandaloneOSXIntel64    , "Standalone" },
+            { BuildTarget.StandaloneOSXUniversal  , "Standalone" },
+            { BuildTarget.StandaloneLinux         , "Standalone" },
+            { BuildTarget.StandaloneLinux64       , "Standalone" },
+            { BuildTarget.StandaloneLinuxUniversal, "Standalone" },
+        };
 
         /// <summary>
         /// ビルドターゲットの実体
@@ -67,6 +84,10 @@ namespace SimpleBuild {
         /// BuildPipeline.BuildAssetBundles を実行する
         /// </summary>
         private void Execute() {
+            if (!OUTPUT_DIRECTORY_MAP.ContainsKey(this.BuildTarget)) {
+                Debug.LogErrorFormat("BuildTarget: {0} 向けの AssetBundle 構築はサポートしていません。", this.BuildTarget);
+                return;
+            }
             string outputPath = this.DeterminateOutputPath();
             string fullPath = Path.GetFullPath(Path.Combine(Path.Combine(Application.dataPath, ".."), outputPath));
             if (!Directory.Exists(fullPath)) {
@@ -81,7 +102,7 @@ namespace SimpleBuild {
         /// </summary>
         /// <returns>出力先パス</returns>
         private string DeterminateOutputPath() {
-            return string.Format(OUTPUT_PATH_FORMAT, this.BuildTarget);
+            return string.Format(OUTPUT_PATH_FORMAT, OUTPUT_DIRECTORY_MAP[this.BuildTarget]);
         }
 
 
