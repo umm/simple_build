@@ -2,9 +2,9 @@
   "name": "@umm/simple_build",
   "version": "1.1.1",
   "description": "Provide BuildPlayer menu",
-  "homepage": "https://github.com/umm-projects/simple_build_",
+  "homepage": "https://github.com/umm-projects/simple_build.git",
   "bugs": {
-    "url": "https://github.com/umm-projects/simple_build_/issues"
+    "url": "https://github.com/umm-projects/simple_build/issues"
   },
   "scripts": {
     "postinstall": "node scripts/postinstall.js",
@@ -19,7 +19,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git@github.com:umm-projects/simple_build_"
+    "url": "git@github.com:umm-projects/simple_build.git"
   },
   "files": [
     "Assets",
