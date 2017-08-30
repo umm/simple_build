@@ -21,6 +21,22 @@ namespace SimpleBuild {
         };
 
         /// <summary>
+        /// BuildTarget と出力拡張子のディクショナリ
+        /// </summary>
+        private static readonly Dictionary<BuildTarget, string> OUTPUT_EXTENSION_MAP = new Dictionary<BuildTarget, string>() {
+            { BuildTarget.iOS, string.Empty },
+            { BuildTarget.Android, ".apk" },
+        };
+
+        /// <summary>
+        /// BuildTarget とディレクトリを作るべきかどうか？のディクショナリ
+        /// </summary>
+        private static readonly Dictionary<BuildTarget, bool> SHOULD_CREATE_DIRECTORY_MAP = new Dictionary<BuildTarget, bool>() {
+            { BuildTarget.iOS, true },
+            { BuildTarget.Android, false },
+        };
+
+        /// <summary>
         /// ビルドターゲットの実体
         /// </summary>
         private BuildTarget buildTarget;
@@ -79,7 +95,7 @@ namespace SimpleBuild {
                 locationPathName = this.DeterminateOuputPath(),
                 scenes = EditorBuildSettings.scenes.Select(x => x.path).ToArray()
             };
-            if (!Directory.Exists(options.locationPathName)) {
+            if (SHOULD_CREATE_DIRECTORY_MAP[this.BuildTarget] && !Directory.Exists(options.locationPathName)) {
                 Directory.CreateDirectory(options.locationPathName);
             }
             BuildPipeline.BuildPlayer(options);
@@ -95,7 +111,7 @@ namespace SimpleBuild {
                 "Developer", // XXX: ココの決め方をどうにか考えたい。
                 "out",
                 this.BuildTarget.ToString(),
-                Application.productName,
+                string.Format("{0}{1}", Application.productName, OUTPUT_EXTENSION_MAP[this.BuildTarget]),
             }.Aggregate(Path.Combine);
         }
 
