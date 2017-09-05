@@ -11,7 +11,7 @@
 # Install
 
 ```shell
-$ npm install -D @umm/simple_build
+$ npm install -D github:umm-projects/simple_build.git
 ```
 
 # Usage
