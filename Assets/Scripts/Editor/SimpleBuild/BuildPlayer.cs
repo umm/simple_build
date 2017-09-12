@@ -16,7 +16,7 @@ namespace SimpleBuild {
         /// <summary>
         /// コマンドライン引数: 開発ビルドかどうか
         /// </summary>
-        private const string COMMANDLINE_ARGUMENT_DEVELOPMENT_BUILD = "development_build";
+        private const string COMMANDLINE_ARGUMENT_DEVELOPMENT_BUILD = "developmentBuild";
 
         /// <summary>
         /// BuildTarget と BuildTargetGroup のディクショナリ
@@ -104,9 +104,11 @@ namespace SimpleBuild {
             if (SHOULD_CREATE_DIRECTORY_MAP[this.BuildTarget] && !Directory.Exists(options.locationPathName)) {
                 Directory.CreateDirectory(options.locationPathName);
             }
-            EditorUserBuildSettings.development = Arguments.GetBool(COMMANDLINE_ARGUMENT_DEVELOPMENT_BUILD);
-            EditorUserBuildSettings.connectProfiler = Arguments.GetBool(COMMANDLINE_ARGUMENT_DEVELOPMENT_BUILD);
-            EditorUserBuildSettings.allowDebugging = Arguments.GetBool(COMMANDLINE_ARGUMENT_DEVELOPMENT_BUILD);
+            if (Arguments.GetBool(COMMANDLINE_ARGUMENT_DEVELOPMENT_BUILD)) {
+                options.options |= BuildOptions.Development;
+                options.options |= BuildOptions.ConnectWithProfiler;
+                options.options |= BuildOptions.AllowDebugging;
+            }
             BuildPipeline.BuildPlayer(options);
         }
 
