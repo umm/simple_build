@@ -16,7 +16,7 @@ namespace SimpleBuild {
         /// <summary>
         /// コマンドライン引数: 開発ビルドかどうか
         /// </summary>
-        private const string COMMANDLINE_ARGUMENT_DEVELOPMENT_BUILD = "development_build";
+        private const string COMMANDLINE_ARGUMENT_DEVELOPMENT_BUILD = "developmentBuild";
 
         /// <summary>
         /// BuildTarget と BuildTargetGroup のディクショナリ
