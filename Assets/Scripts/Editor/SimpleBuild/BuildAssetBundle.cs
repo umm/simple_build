@@ -61,6 +61,26 @@ namespace SimpleBuild {
         }
 
         /// <summary>
+        /// Standalone 向けビルドを実行する
+        /// </summary>
+        /// <remarks>Jenkins などの CI ツールからのキックを想定してサフィックスをつけています。</remarks>
+        public static void Run_Standalone() {
+            new BuildAssetBundle() {
+#if UNITY_EDITOR_OSX && UNITY_EDITOR_64
+                BuildTarget = BuildTarget.StandaloneOSXIntel64,
+#elif UNITY_EDITOR_OSX && !UNITY_EDITOR_64
+                BuildTarget = BuildTarget.StandaloneOSXIntel,
+#elif UNITY_EDITOR_WIN && UNITY_EDITOR_64
+                BuildTarget = BuildTarget.StandaloneWindows64,
+#elif UNITY_EDITOR_WIN && !UNITY_EDITOR_64
+                BuildTarget = BuildTarget.StandaloneWindows,
+#else
+                BuildTarget = BuildTarget.StandaloneLinux,
+#endif
+            }.Execute();
+        }
+
+        /// <summary>
         /// iOS 向けビルドを実行する
         /// </summary>
         /// <remarks>Jenkins などの CI ツールからのキックを想定してサフィックスをつけています。</remarks>
