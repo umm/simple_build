@@ -109,6 +109,7 @@ namespace SimpleBuild {
                 options.options |= BuildOptions.ConnectWithProfiler;
                 options.options |= BuildOptions.AllowDebugging;
             }
+            options.options |= BuildOptions.CompressWithLz4;
             BuildPipeline.BuildPlayer(options);
         }
 
