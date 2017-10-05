@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
-using UnityModule.CommandLine;
 
 namespace SimpleBuild {
 
@@ -14,9 +13,9 @@ namespace SimpleBuild {
     public class BuildPlayer {
 
         /// <summary>
-        /// コマンドライン引数: 開発ビルドかどうか
+        /// 環境変数: 開発ビルドかどうか
         /// </summary>
-        private const string COMMANDLINE_ARGUMENT_DEVELOPMENT_BUILD = "developmentBuild";
+        private const string ENVIRONMENT_VARIABLE_BUILD_DEVELOPMENT = "BUILD_DEVELOPMENT";
 
         /// <summary>
         /// BuildTarget と BuildTargetGroup のディクショナリ
@@ -104,7 +103,7 @@ namespace SimpleBuild {
             if (SHOULD_CREATE_DIRECTORY_MAP[this.BuildTarget] && !Directory.Exists(options.locationPathName)) {
                 Directory.CreateDirectory(options.locationPathName);
             }
-            if (Arguments.GetBool(COMMANDLINE_ARGUMENT_DEVELOPMENT_BUILD)) {
+            if (Environment.GetEnvironmentVariable(ENVIRONMENT_VARIABLE_BUILD_DEVELOPMENT) == "true") {
                 options.options |= BuildOptions.Development;
                 options.options |= BuildOptions.ConnectWithProfiler;
                 options.options |= BuildOptions.AllowDebugging;
