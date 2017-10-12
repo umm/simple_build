@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using NUnit.Framework;
+using UnityEditor;
 using UnityEngine;
 
 namespace SimpleBuild {
@@ -29,11 +30,11 @@ namespace SimpleBuild {
 
         public static bool HasCalledOnPostprocess { get; set; }
 
-        public void OnPreprocessBuildAssetBundle(string outputPath) {
+        public void OnPreprocessBuildAssetBundle(BuildTarget buildTarget, string path) {
             HasCalledOnPreprocess = true;
         }
 
-        public void OnPostprocessBuildAssetBundle(string outputPath) {
+        public void OnPostprocessBuildAssetBundle(BuildTarget buildTarget, string path) {
             HasCalledOnPostprocess = true;
         }
 
