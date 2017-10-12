@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using UnityEditor;
+using UnityEditor.Build;
 using UnityEngine;
 
 namespace SimpleBuild {
@@ -12,7 +13,7 @@ namespace SimpleBuild {
     /// AssetBundle ビルド前処理用インタフェース
     /// </summary>
     /// <remarks>Unity 2017.1.1p3 時点では AssetBundle のビルド前後に処理を挟めないので自作する</remarks>
-    public interface IPreprocessBuildAssetBundle {
+    public interface IPreprocessBuildAssetBundle : IOrderedCallback {
 
         void OnPreprocessBuildAssetBundle(string outputPath);
 
@@ -22,7 +23,7 @@ namespace SimpleBuild {
     /// AssetBundle ビルド後処理用インタフェース
     /// </summary>
     /// <remarks>Unity 2017.1.1p3 時点では AssetBundle のビルド前後に処理を挟めないので自作する</remarks>
-    public interface IPostprocessBuildAssetBundle {
+    public interface IPostprocessBuildAssetBundle : IOrderedCallback {
 
         void OnPostprocessBuildAssetBundle(string outputPath);
 
@@ -183,7 +184,7 @@ namespace SimpleBuild {
         /// </summary>
         /// <typeparam name="T">IPreprocessBuildAssetBundle, IPostprocessBuildAssetBundle</typeparam>
         /// <returns>インスタンスのコレクション</returns>
-        private static IEnumerable<T> LoadProcessors<T>() {
+        private static IEnumerable<T> LoadProcessors<T>() where T : IOrderedCallback {
             // ReSharper disable once ConvertClosureToMethodGroup
             string dllPath = new [] {
                 Path.GetDirectoryName(Application.dataPath),
@@ -198,7 +199,8 @@ namespace SimpleBuild {
             return assembly.GetTypes()
                 .Where(x => typeof(T).IsAssignableFrom(x))
                 .Where(x => x != typeof(T))
-                .Select(x => (T)Activator.CreateInstance(x));
+                .Select(x => (T)Activator.CreateInstance(x))
+                .OrderBy(x => x.callbackOrder);
         }
 
 
