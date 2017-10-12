@@ -1,9 +1,32 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Reflection;
 using UnityEditor;
 using UnityEngine;
 
 namespace SimpleBuild {
+
+    /// <summary>
+    /// AssetBundle ビルド前処理用インタフェース
+    /// </summary>
+    /// <remarks>Unity 2017.1.1p3 時点では AssetBundle のビルド前後に処理を挟めないので自作する</remarks>
+    public interface IPreprocessBuildAssetBundle {
+
+        void OnPreprocessBuildAssetBundle(string outputPath);
+
+    }
+
+    /// <summary>
+    /// AssetBundle ビルド後処理用インタフェース
+    /// </summary>
+    /// <remarks>Unity 2017.1.1p3 時点では AssetBundle のビルド前後に処理を挟めないので自作する</remarks>
+    public interface IPostprocessBuildAssetBundle {
+
+        void OnPostprocessBuildAssetBundle(string outputPath);
+
+    }
 
     /// <summary>
     /// AssetBundle をビルドします
@@ -113,7 +136,9 @@ namespace SimpleBuild {
             if (!Directory.Exists(fullPath)) {
                 Directory.CreateDirectory(fullPath);
             }
+            CallPreprocessBuild(outputPath);
             BuildPipeline.BuildAssetBundles(outputPath, BuildAssetBundleOptions.ChunkBasedCompression, this.BuildTarget);
+            CallPostprocessBuild(outputPath);
             AssetDatabase.Refresh();
         }
 
@@ -123,6 +148,57 @@ namespace SimpleBuild {
         /// <returns>出力先パス</returns>
         private string DeterminateOutputPath() {
             return string.Format(OUTPUT_PATH_FORMAT, OUTPUT_DIRECTORY_MAP[this.BuildTarget]);
+        }
+
+        /// <summary>
+        /// AssetBundle 構築前処理をコール
+        /// </summary>
+        /// <param name="outputPath">出力先パス</param>
+        private static void CallPreprocessBuild(string outputPath) {
+            IEnumerable<IPreprocessBuildAssetBundle> preprocessors = LoadProcessors<IPreprocessBuildAssetBundle>();
+            if (preprocessors == null) {
+                return;
+            }
+            foreach (IPreprocessBuildAssetBundle preprocessor in preprocessors) {
+                preprocessor.OnPreprocessBuildAssetBundle(outputPath);
+            }
+        }
+
+        /// <summary>
+        /// AssetBundle 構築後処理をコール
+        /// </summary>
+        /// <param name="outputPath">出力先パス</param>
+        private static void CallPostprocessBuild(string outputPath) {
+            IEnumerable<IPostprocessBuildAssetBundle> postprocessors = LoadProcessors<IPostprocessBuildAssetBundle>();
+            if (postprocessors == null) {
+                return;
+            }
+            foreach (IPostprocessBuildAssetBundle postprocessor in postprocessors) {
+                postprocessor.OnPostprocessBuildAssetBundle(outputPath);
+            }
+        }
+
+        /// <summary>
+        /// Reflection を用いて IPreprocessBuildAssetBundle や IPostprocessBuildAssetBundle のインスタンスを読み込む
+        /// </summary>
+        /// <typeparam name="T">IPreprocessBuildAssetBundle, IPostprocessBuildAssetBundle</typeparam>
+        /// <returns>インスタンスのコレクション</returns>
+        private static IEnumerable<T> LoadProcessors<T>() {
+            // ReSharper disable once ConvertClosureToMethodGroup
+            string dllPath = new [] {
+                Path.GetDirectoryName(Application.dataPath),
+                "Library",
+                "ScriptAssemblies",
+                "Assembly-CSharp-Editor.dll",
+            }.Aggregate((a, b) => Path.Combine(a, b));
+            if (!File.Exists(dllPath)) {
+                return null;
+            }
+            Assembly assembly = Assembly.LoadFile(dllPath);
+            return assembly.GetTypes()
+                .Where(x => typeof(T).IsAssignableFrom(x))
+                .Where(x => x != typeof(T))
+                .Select(x => (T)Activator.CreateInstance(x));
         }
 
 
