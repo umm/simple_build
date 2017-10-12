@@ -37,6 +37,8 @@ namespace SimpleBuild {
             HasCalledOnPostprocess = true;
         }
 
+        public int callbackOrder { get; private set; }
+
     }
 
 }
