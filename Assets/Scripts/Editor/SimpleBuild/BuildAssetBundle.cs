@@ -15,7 +15,7 @@ namespace SimpleBuild {
     /// <remarks>Unity 2017.1.1p3 時点では AssetBundle のビルド前後に処理を挟めないので自作する</remarks>
     public interface IPreprocessBuildAssetBundle : IOrderedCallback {
 
-        void OnPreprocessBuildAssetBundle(string outputPath);
+        void OnPreprocessBuildAssetBundle(BuildTarget buildTarget, string path);
 
     }
 
@@ -25,7 +25,7 @@ namespace SimpleBuild {
     /// <remarks>Unity 2017.1.1p3 時点では AssetBundle のビルド前後に処理を挟めないので自作する</remarks>
     public interface IPostprocessBuildAssetBundle : IOrderedCallback {
 
-        void OnPostprocessBuildAssetBundle(string outputPath);
+        void OnPostprocessBuildAssetBundle(BuildTarget buildTarget, string path);
 
     }
 
@@ -137,9 +137,9 @@ namespace SimpleBuild {
             if (!Directory.Exists(fullPath)) {
                 Directory.CreateDirectory(fullPath);
             }
-            CallPreprocessBuild(outputPath);
+            CallPreprocessBuild(this.BuildTarget, outputPath);
             BuildPipeline.BuildAssetBundles(outputPath, BuildAssetBundleOptions.ChunkBasedCompression, this.BuildTarget);
-            CallPostprocessBuild(outputPath);
+            CallPostprocessBuild(this.BuildTarget, outputPath);
             AssetDatabase.Refresh();
         }
 
@@ -154,28 +154,30 @@ namespace SimpleBuild {
         /// <summary>
         /// AssetBundle 構築前処理をコール
         /// </summary>
-        /// <param name="outputPath">出力先パス</param>
-        private static void CallPreprocessBuild(string outputPath) {
+        /// <param name="buildTarget">ビルドターゲットプラットフォーム</param>
+        /// <param name="path">出力先パス</param>
+        private static void CallPreprocessBuild(BuildTarget buildTarget, string path) {
             IEnumerable<IPreprocessBuildAssetBundle> preprocessors = LoadProcessors<IPreprocessBuildAssetBundle>();
             if (preprocessors == null) {
                 return;
             }
             foreach (IPreprocessBuildAssetBundle preprocessor in preprocessors) {
-                preprocessor.OnPreprocessBuildAssetBundle(outputPath);
+                preprocessor.OnPreprocessBuildAssetBundle(buildTarget, path);
             }
         }
 
         /// <summary>
         /// AssetBundle 構築後処理をコール
         /// </summary>
-        /// <param name="outputPath">出力先パス</param>
-        private static void CallPostprocessBuild(string outputPath) {
+        /// <param name="buildTarget">ビルドターゲットプラットフォーム</param>
+        /// <param name="path">出力先パス</param>
+        private static void CallPostprocessBuild(BuildTarget buildTarget, string path) {
             IEnumerable<IPostprocessBuildAssetBundle> postprocessors = LoadProcessors<IPostprocessBuildAssetBundle>();
             if (postprocessors == null) {
                 return;
             }
             foreach (IPostprocessBuildAssetBundle postprocessor in postprocessors) {
-                postprocessor.OnPostprocessBuildAssetBundle(outputPath);
+                postprocessor.OnPostprocessBuildAssetBundle(buildTarget, path);
             }
         }
 
