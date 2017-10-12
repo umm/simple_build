@@ -32,7 +32,7 @@ $ npm install -D github:umm-projects/simple_build.git
 * Unity 2017.1 時点では AssetBundle のビルド前後に処理を挟むことができません。
 * そのため、擬似的に処理を実行できる仕組みを組み込んでいます。
 * interface として `SimpleBuild.IPreprocessBuildAssetBundle` と `SimpleBuild.IPostprocessBuildAssetBundle` を提供しているので、必要に応じてそれぞれ `OnPreprocessBuildAssetBundle` と `OnPostprocessBuildAssetBundle` を実装してください。
-  * どちらのメソッドも引数に AssetBundle 出力先のディレクトリパスを渡します。
+  * どちらのメソッドも引数に AssetBundle 出力先のディレクトリパスを渡します。
 
 
 # License
