@@ -27,6 +27,14 @@ $ npm install -D github:umm-projects/simple_build.git
 * プロジェクトのメニューの `Project` &gt; `Build Player` を実行すると、現在エディタが向いているプラットフォーム向けのプレイヤービルドを実行します。
 * プロジェクトのメニューの `Project` &gt; `Build AssetBundle` を実行すると、現在エディタが向いているプラットフォーム向けの AssetBundle ビルドを実行します。
 
+## AssetBundle ビルド前後処理
+
+* Unity 2017.1 時点では AssetBundle のビルド前後に処理を挟むことができません。
+* そのため、擬似的に処理を実行できる仕組みを組み込んでいます。
+* interface として `SimpleBuild.IPreprocessBuildAssetBundle` と `SimpleBuild.IPostprocessBuildAssetBundle` を提供しているので、必要に応じてそれぞれ `OnPreprocessBuildAssetBundle` と `OnPostprocessBuildAssetBundle` を実装してください。
+  * どちらのメソッドも引数に AssetBundle 出力先のディレクトリパスを渡します。
+
+
 # License
 
 Copyright (c) 2017 Tetsuya Mori
