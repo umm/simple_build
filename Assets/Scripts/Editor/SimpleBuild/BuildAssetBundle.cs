@@ -49,7 +49,7 @@ namespace SimpleBuild {
             { BuildTarget.StandaloneWindows64     , "Standalone" },
             { BuildTarget.StandaloneOSXIntel      , "Standalone" },
             { BuildTarget.StandaloneOSXIntel64    , "Standalone" },
-            { BuildTarget.StandaloneOSXUniversal  , "Standalone" },
+            { BuildTarget.StandaloneOSX  , "Standalone" },
             { BuildTarget.StandaloneLinux         , "Standalone" },
             { BuildTarget.StandaloneLinux64       , "Standalone" },
             { BuildTarget.StandaloneLinuxUniversal, "Standalone" },
