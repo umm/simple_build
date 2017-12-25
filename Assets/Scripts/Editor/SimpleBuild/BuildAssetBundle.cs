@@ -47,9 +47,7 @@ namespace SimpleBuild {
             { BuildTarget.Android                 , "Android" },
             { BuildTarget.StandaloneWindows       , "Standalone" },
             { BuildTarget.StandaloneWindows64     , "Standalone" },
-            { BuildTarget.StandaloneOSXIntel      , "Standalone" },
-            { BuildTarget.StandaloneOSXIntel64    , "Standalone" },
-            { BuildTarget.StandaloneOSX  , "Standalone" },
+            { BuildTarget.StandaloneOSX           , "Standalone" },
             { BuildTarget.StandaloneLinux         , "Standalone" },
             { BuildTarget.StandaloneLinux64       , "Standalone" },
             { BuildTarget.StandaloneLinuxUniversal, "Standalone" },
@@ -90,10 +88,8 @@ namespace SimpleBuild {
         /// <remarks>Jenkins などの CI ツールからのキックを想定してサフィックスをつけています。</remarks>
         public static void Run_Standalone() {
             new BuildAssetBundle() {
-#if UNITY_EDITOR_OSX && UNITY_EDITOR_64
-                BuildTarget = BuildTarget.StandaloneOSXIntel64,
-#elif UNITY_EDITOR_OSX && !UNITY_EDITOR_64
-                BuildTarget = BuildTarget.StandaloneOSXIntel,
+#if UNITY_EDITOR_OSX
+                BuildTarget = BuildTarget.StandaloneOSX,
 #elif UNITY_EDITOR_WIN && UNITY_EDITOR_64
                 BuildTarget = BuildTarget.StandaloneWindows64,
 #elif UNITY_EDITOR_WIN && !UNITY_EDITOR_64
