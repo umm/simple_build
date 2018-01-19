@@ -35,6 +35,11 @@ namespace SimpleBuild {
     public class BuildAssetBundle {
 
         /// <summary>
+        /// 環境変数: 開発ビルドかどうか
+        /// </summary>
+        private const string ENVIRONMENT_VARIABLE_BUILD_DEVELOPMENT = "BUILD_DEVELOPMENT";
+
+        /// <summary>
         /// 出力先パスフォーマット
         /// </summary>
         private const string OUTPUT_PATH_FORMAT = "Assets/AssetBundles/{0}";
@@ -124,6 +129,7 @@ namespace SimpleBuild {
         /// BuildPipeline.BuildAssetBundles を実行する
         /// </summary>
         private void Execute() {
+            EditorUserBuildSettings.development = Environment.GetEnvironmentVariable(ENVIRONMENT_VARIABLE_BUILD_DEVELOPMENT) == "true";
             if (!OUTPUT_DIRECTORY_MAP.ContainsKey(this.BuildTarget)) {
                 Debug.LogErrorFormat("BuildTarget: {0} 向けの AssetBundle 構築はサポートしていません。", this.BuildTarget);
                 return;
