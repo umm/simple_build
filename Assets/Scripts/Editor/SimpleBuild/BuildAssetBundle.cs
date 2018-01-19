@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using UnityEditor;
 using UnityEngine;
@@ -9,6 +10,11 @@ namespace SimpleBuild {
     /// AssetBundle をビルドします
     /// </summary>
     public class BuildAssetBundle {
+
+        /// <summary>
+        /// 環境変数: 開発ビルドかどうか
+        /// </summary>
+        private const string ENVIRONMENT_VARIABLE_BUILD_DEVELOPMENT = "BUILD_DEVELOPMENT";
 
         /// <summary>
         /// 出力先パスフォーマット
@@ -98,6 +104,7 @@ namespace SimpleBuild {
         /// BuildPipeline.BuildAssetBundles を実行する
         /// </summary>
         private void Execute() {
+            EditorUserBuildSettings.development = Environment.GetEnvironmentVariable(ENVIRONMENT_VARIABLE_BUILD_DEVELOPMENT) == "true";
             if (!OUTPUT_DIRECTORY_MAP.ContainsKey(this.BuildTarget)) {
                 Debug.LogErrorFormat("BuildTarget: {0} 向けの AssetBundle 構築はサポートしていません。", this.BuildTarget);
                 return;

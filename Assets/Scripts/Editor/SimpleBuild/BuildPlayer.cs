@@ -85,6 +85,11 @@ namespace SimpleBuild {
         /// </summary>
         /// <remarks>Jenkins などの CI ツールからのキックを想定してサフィックスをつけています。</remarks>
         public static void Run_Android() {
+            // Unity 2017.1 からは PreprocessBuild が使えるらしいので、そこに期待
+            PlayerSettings.Android.keystoreName = "";
+            PlayerSettings.Android.keystorePass = "";
+            PlayerSettings.Android.keyaliasName = "";
+            PlayerSettings.Android.keyaliasPass = "";
             new BuildPlayer() {
                 BuildTarget = BuildTarget.Android,
             }.Execute();
@@ -94,6 +99,7 @@ namespace SimpleBuild {
         /// ビルドを実行する
         /// </summary>
         private void Execute() {
+            EditorUserBuildSettings.development = Environment.GetEnvironmentVariable(ENVIRONMENT_VARIABLE_BUILD_DEVELOPMENT) == "true";
             BuildPlayerOptions options = new BuildPlayerOptions {
                 target = this.BuildTarget,
                 targetGroup = BUILD_TARGET_GROUP_MAP[this.BuildTarget],
@@ -103,7 +109,7 @@ namespace SimpleBuild {
             if (SHOULD_CREATE_DIRECTORY_MAP[this.BuildTarget] && !Directory.Exists(options.locationPathName)) {
                 Directory.CreateDirectory(options.locationPathName);
             }
-            if (Environment.GetEnvironmentVariable(ENVIRONMENT_VARIABLE_BUILD_DEVELOPMENT) == "true") {
+            if (EditorUserBuildSettings.development) {
                 options.options |= BuildOptions.Development;
                 options.options |= BuildOptions.ConnectWithProfiler;
                 options.options |= BuildOptions.AllowDebugging;
