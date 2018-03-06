@@ -6,6 +6,7 @@ using System.Reflection;
 using UnityEditor;
 using UnityEditor.Build;
 using UnityEngine;
+// ReSharper disable UseNullPropagation
 
 namespace SimpleBuild {
 
@@ -139,9 +140,15 @@ namespace SimpleBuild {
             if (!Directory.Exists(fullPath)) {
                 Directory.CreateDirectory(fullPath);
             }
-            CallPreprocessBuild(this.BuildTarget, outputPath);
+            // BuildPipeline が走る前に取得しておかないと Postprocessor が取得できない
+            IEnumerable<IPreprocessBuildAssetBundle> preprocessors = LoadProcessors<IPreprocessBuildAssetBundle>();
+            IEnumerable<IPostprocessBuildAssetBundle> postprocessors = LoadProcessors<IPostprocessBuildAssetBundle>();
+
+            preprocessors.ToList().ForEach(x => x.OnPreprocessBuildAssetBundle(this.BuildTarget, outputPath));
+            AssetDatabase.Refresh();
             BuildPipeline.BuildAssetBundles(outputPath, BuildAssetBundleOptions.ChunkBasedCompression, this.BuildTarget);
-            CallPostprocessBuild(this.BuildTarget, outputPath);
+            AssetDatabase.Refresh();
+            postprocessors.ToList().ForEach(x => x.OnPostprocessBuildAssetBundle(this.BuildTarget, outputPath));
             AssetDatabase.Refresh();
         }
 
@@ -151,36 +158,6 @@ namespace SimpleBuild {
         /// <returns>出力先パス</returns>
         private string DeterminateOutputPath() {
             return string.Format(OUTPUT_PATH_FORMAT, OUTPUT_DIRECTORY_MAP[this.BuildTarget]);
-        }
-
-        /// <summary>
-        /// AssetBundle 構築前処理をコール
-        /// </summary>
-        /// <param name="buildTarget">ビルドターゲットプラットフォーム</param>
-        /// <param name="path">出力先パス</param>
-        private static void CallPreprocessBuild(BuildTarget buildTarget, string path) {
-            IEnumerable<IPreprocessBuildAssetBundle> preprocessors = LoadProcessors<IPreprocessBuildAssetBundle>();
-            if (preprocessors == null) {
-                return;
-            }
-            foreach (IPreprocessBuildAssetBundle preprocessor in preprocessors) {
-                preprocessor.OnPreprocessBuildAssetBundle(buildTarget, path);
-            }
-        }
-
-        /// <summary>
-        /// AssetBundle 構築後処理をコール
-        /// </summary>
-        /// <param name="buildTarget">ビルドターゲットプラットフォーム</param>
-        /// <param name="path">出力先パス</param>
-        private static void CallPostprocessBuild(BuildTarget buildTarget, string path) {
-            IEnumerable<IPostprocessBuildAssetBundle> postprocessors = LoadProcessors<IPostprocessBuildAssetBundle>();
-            if (postprocessors == null) {
-                return;
-            }
-            foreach (IPostprocessBuildAssetBundle postprocessor in postprocessors) {
-                postprocessor.OnPostprocessBuildAssetBundle(buildTarget, path);
-            }
         }
 
         /// <summary>
@@ -197,7 +174,7 @@ namespace SimpleBuild {
                 "Assembly-CSharp-Editor.dll",
             }.Aggregate((a, b) => Path.Combine(a, b));
             if (!File.Exists(dllPath)) {
-                return null;
+                return new T[0];
             }
             Assembly assembly = Assembly.LoadFile(dllPath);
             return assembly.GetTypes()
