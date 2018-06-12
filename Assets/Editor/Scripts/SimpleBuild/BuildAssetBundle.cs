@@ -166,24 +166,15 @@ namespace SimpleBuild {
         /// <typeparam name="T">IPreprocessBuildAssetBundle, IPostprocessBuildAssetBundle</typeparam>
         /// <returns>インスタンスのコレクション</returns>
         private static IEnumerable<T> LoadProcessors<T>() where T : IOrderedCallback {
-            // ReSharper disable once ConvertClosureToMethodGroup
-            string dllPath = new [] {
-                Path.GetDirectoryName(Application.dataPath),
-                "Library",
-                "ScriptAssemblies",
-                "Assembly-CSharp-Editor.dll",
-            }.Aggregate((a, b) => Path.Combine(a, b));
-            if (!File.Exists(dllPath)) {
-                return new T[0];
-            }
-            Assembly assembly = Assembly.LoadFile(dllPath);
-            return assembly.GetTypes()
-                .Where(x => typeof(T).IsAssignableFrom(x))
-                .Where(x => x != typeof(T))
+            return AppDomain
+                .CurrentDomain
+                .GetAssemblies()
+                .SelectMany(x => x.GetTypes())
+                .Where(x => typeof(T).IsAssignableFrom(x) && x.IsClass && !x.IsAbstract)
                 .Select(x => (T)Activator.CreateInstance(x))
+                .Where(x => x != null)
                 .OrderBy(x => x.callbackOrder);
         }
-
 
     }
 
