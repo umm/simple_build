@@ -146,7 +146,7 @@ namespace SimpleBuild {
 
             preprocessors.ToList().ForEach(x => x.OnPreprocessBuildAssetBundle(this.BuildTarget, outputPath));
             AssetDatabase.Refresh();
-            BuildPipeline.BuildAssetBundles(outputPath, BuildAssetBundleOptions.ChunkBasedCompression, this.BuildTarget);
+            BuildPipeline.BuildAssetBundles(outputPath, BuildAssetBundleOptions.ChunkBasedCompression | BuildAssetBundleOptions.IgnoreTypeTreeChanges, this.BuildTarget);
             AssetDatabase.Refresh();
             postprocessors.ToList().ForEach(x => x.OnPostprocessBuildAssetBundle(this.BuildTarget, outputPath));
             AssetDatabase.Refresh();
