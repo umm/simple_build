@@ -2,9 +2,9 @@
   "name": "@umm/simple_build",
   "version": "1.6.3",
   "description": "Provide BuildPlayer menu",
-  "homepage": "https://github.com/umm-projects/simple_build.git",
+  "homepage": "https://github.com/umm/simple_build.git",
   "bugs": {
-    "url": "https://github.com/umm-projects/simple_build/issues"
+    "url": "https://github.com/umm/simple_build/issues"
   },
   "scripts": {
     "umm:init": "umm-init",
@@ -22,14 +22,14 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git@github.com:umm-projects/simple_build.git"
+    "url": "git@github.com:umm/simple_build.git"
   },
   "files": [
     "Assets",
     "scripts"
   ],
   "dependencies": {
-    "@umm/scripts": "umm-projects/scripts#^1.0.0"
+    "@umm/scripts": "umm/scripts#^1.0.0"
   },
   "devDependencies": {}
 }
