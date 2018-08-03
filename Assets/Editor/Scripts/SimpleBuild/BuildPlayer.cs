@@ -15,12 +15,22 @@ namespace SimpleBuild {
         /// <summary>
         /// 環境変数: 開発ビルドかどうか
         /// </summary>
-        private const string ENVIRONMENT_VARIABLE_BUILD_DEVELOPMENT = "BUILD_DEVELOPMENT";
+        private const string EnvironmentVariableBuildDevelopment = "BUILD_DEVELOPMENT";
+
+        /// <summary>
+        /// 環境変数: プロファイラに接続するかどうか
+        /// </summary>
+        private const string EnvironmentVariableConnectWithProfiler = "CONNECT_WITH_PROFILER";
+
+        /// <summary>
+        /// 環境変数: デバッグを許可するかどうか
+        /// </summary>
+        private const string EnvironmentVariableAllowDebugging = "ALLOW_DEBUGGING";
 
         /// <summary>
         /// BuildTarget と BuildTargetGroup のディクショナリ
         /// </summary>
-        private static readonly Dictionary<BuildTarget, BuildTargetGroup> BUILD_TARGET_GROUP_MAP = new Dictionary<BuildTarget, BuildTargetGroup>() {
+        private static readonly Dictionary<BuildTarget, BuildTargetGroup> BuildTargetGroupMap = new Dictionary<BuildTarget, BuildTargetGroup>() {
             { BuildTarget.iOS, BuildTargetGroup.iOS },
             { BuildTarget.Android, BuildTargetGroup.Android },
         };
@@ -28,7 +38,7 @@ namespace SimpleBuild {
         /// <summary>
         /// BuildTarget と出力拡張子のディクショナリ
         /// </summary>
-        private static readonly Dictionary<BuildTarget, string> OUTPUT_EXTENSION_MAP = new Dictionary<BuildTarget, string>() {
+        private static readonly Dictionary<BuildTarget, string> OutputExtensionMap = new Dictionary<BuildTarget, string>() {
             { BuildTarget.iOS, string.Empty },
             { BuildTarget.Android, ".apk" },
         };
@@ -36,7 +46,7 @@ namespace SimpleBuild {
         /// <summary>
         /// BuildTarget とディレクトリを作るべきかどうか？のディクショナリ
         /// </summary>
-        private static readonly Dictionary<BuildTarget, bool> SHOULD_CREATE_DIRECTORY_MAP = new Dictionary<BuildTarget, bool>() {
+        private static readonly Dictionary<BuildTarget, bool> ShouldCreateDirectoryMap = new Dictionary<BuildTarget, bool>() {
             { BuildTarget.iOS, true },
             { BuildTarget.Android, false },
         };
@@ -51,13 +61,13 @@ namespace SimpleBuild {
         /// </summary>
         public BuildTarget BuildTarget {
             get {
-                if (this.buildTarget == default(BuildTarget)) {
-                    this.buildTarget = EditorUserBuildSettings.activeBuildTarget;
+                if (buildTarget == default(BuildTarget)) {
+                    buildTarget = EditorUserBuildSettings.activeBuildTarget;
                 }
-                return this.buildTarget;
+                return buildTarget;
             }
             set {
-                this.buildTarget = value;
+                buildTarget = value;
             }
         }
 
@@ -94,20 +104,26 @@ namespace SimpleBuild {
         /// ビルドを実行する
         /// </summary>
         private void Execute() {
-            EditorUserBuildSettings.development = Environment.GetEnvironmentVariable(ENVIRONMENT_VARIABLE_BUILD_DEVELOPMENT) == "true";
-            BuildPlayerOptions options = new BuildPlayerOptions {
-                target = this.BuildTarget,
-                targetGroup = BUILD_TARGET_GROUP_MAP[this.BuildTarget],
-                locationPathName = this.DeterminateOuputPath(),
+            EditorUserBuildSettings.development = Environment.GetEnvironmentVariable(EnvironmentVariableBuildDevelopment) == "true";
+            var options = new BuildPlayerOptions {
+                target = BuildTarget,
+                targetGroup = BuildTargetGroupMap[BuildTarget],
+                locationPathName = DeterminateOuputPath(),
                 scenes = EditorBuildSettings.scenes.Select(x => x.path).ToArray()
             };
-            if (SHOULD_CREATE_DIRECTORY_MAP[this.BuildTarget] && !Directory.Exists(options.locationPathName)) {
+            if (ShouldCreateDirectoryMap[BuildTarget] && !Directory.Exists(options.locationPathName)) {
                 Directory.CreateDirectory(options.locationPathName);
             }
             if (EditorUserBuildSettings.development) {
                 options.options |= BuildOptions.Development;
-                options.options |= BuildOptions.ConnectWithProfiler;
-                options.options |= BuildOptions.AllowDebugging;
+                if (Environment.GetEnvironmentVariable(EnvironmentVariableConnectWithProfiler) != "false")
+                {
+                    options.options |= BuildOptions.ConnectWithProfiler;
+                }
+                if (Environment.GetEnvironmentVariable(EnvironmentVariableAllowDebugging) != "false")
+                {
+                    options.options |= BuildOptions.AllowDebugging;
+                }
             }
             options.options |= BuildOptions.CompressWithLz4;
             BuildPipeline.BuildPlayer(options);
@@ -122,8 +138,8 @@ namespace SimpleBuild {
                 Environment.GetFolderPath(Environment.SpecialFolder.Personal),
                 "Developer", // XXX: ココの決め方をどうにか考えたい。
                 "out",
-                this.BuildTarget.ToString(),
-                string.Format("{0}{1}", Application.productName, OUTPUT_EXTENSION_MAP[this.BuildTarget]),
+                BuildTarget.ToString(),
+                string.Format("{0}{1}", Application.productName, OutputExtensionMap[BuildTarget]),
             }.Aggregate(Path.Combine);
         }
 
