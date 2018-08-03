@@ -38,17 +38,17 @@ namespace SimpleBuild {
         /// <summary>
         /// 環境変数: 開発ビルドかどうか
         /// </summary>
-        private const string ENVIRONMENT_VARIABLE_BUILD_DEVELOPMENT = "BUILD_DEVELOPMENT";
+        private const string EnvironmentVariableBuildDevelopment = "BUILD_DEVELOPMENT";
 
         /// <summary>
         /// 出力先パスフォーマット
         /// </summary>
-        private const string OUTPUT_PATH_FORMAT = "Assets/AssetBundles/{0}";
+        private const string OutputPathFormat = "Assets/AssetBundles/{0}";
 
         /// <summary>
         /// ビルドターゲットと出力先ディレクトリの辞書
         /// </summary>
-        private static readonly Dictionary<BuildTarget, string> OUTPUT_DIRECTORY_MAP = new Dictionary<BuildTarget, string>() {
+        private static readonly Dictionary<BuildTarget, string> OutputDirectoryMap = new Dictionary<BuildTarget, string>() {
             { BuildTarget.iOS                     , "iOS" },
             { BuildTarget.Android                 , "Android" },
             { BuildTarget.StandaloneWindows       , "Standalone" },
@@ -69,13 +69,13 @@ namespace SimpleBuild {
         /// </summary>
         public BuildTarget BuildTarget {
             get {
-                if (this.buildTarget == default(BuildTarget)) {
-                    this.buildTarget = EditorUserBuildSettings.activeBuildTarget;
+                if (buildTarget == default(BuildTarget)) {
+                    buildTarget = EditorUserBuildSettings.activeBuildTarget;
                 }
-                return this.buildTarget;
+                return buildTarget;
             }
             set {
-                this.buildTarget = value;
+                buildTarget = value;
             }
         }
 
@@ -130,25 +130,25 @@ namespace SimpleBuild {
         /// BuildPipeline.BuildAssetBundles を実行する
         /// </summary>
         private void Execute() {
-            EditorUserBuildSettings.development = Environment.GetEnvironmentVariable(ENVIRONMENT_VARIABLE_BUILD_DEVELOPMENT) == "true";
-            if (!OUTPUT_DIRECTORY_MAP.ContainsKey(this.BuildTarget)) {
-                Debug.LogErrorFormat("BuildTarget: {0} 向けの AssetBundle 構築はサポートしていません。", this.BuildTarget);
+            EditorUserBuildSettings.development = Environment.GetEnvironmentVariable(EnvironmentVariableBuildDevelopment) == "true";
+            if (!OutputDirectoryMap.ContainsKey(BuildTarget)) {
+                Debug.LogErrorFormat("BuildTarget: {0} 向けの AssetBundle 構築はサポートしていません。", BuildTarget);
                 return;
             }
-            string outputPath = this.DeterminateOutputPath();
-            string fullPath = Path.GetFullPath(Path.Combine(Path.Combine(Application.dataPath, ".."), outputPath));
+            var outputPath = DeterminateOutputPath();
+            var fullPath = Path.GetFullPath(Path.Combine(Path.Combine(Application.dataPath, ".."), outputPath));
             if (!Directory.Exists(fullPath)) {
                 Directory.CreateDirectory(fullPath);
             }
             // BuildPipeline が走る前に取得しておかないと Postprocessor が取得できない
-            IEnumerable<IPreprocessBuildAssetBundle> preprocessors = LoadProcessors<IPreprocessBuildAssetBundle>();
-            IEnumerable<IPostprocessBuildAssetBundle> postprocessors = LoadProcessors<IPostprocessBuildAssetBundle>();
+            var preprocessors = LoadProcessors<IPreprocessBuildAssetBundle>();
+            var postprocessors = LoadProcessors<IPostprocessBuildAssetBundle>();
 
-            preprocessors.ToList().ForEach(x => x.OnPreprocessBuildAssetBundle(this.BuildTarget, outputPath));
+            preprocessors.ToList().ForEach(x => x.OnPreprocessBuildAssetBundle(BuildTarget, outputPath));
             AssetDatabase.Refresh();
-            BuildPipeline.BuildAssetBundles(outputPath, BuildAssetBundleOptions.ChunkBasedCompression | BuildAssetBundleOptions.IgnoreTypeTreeChanges, this.BuildTarget);
+            BuildPipeline.BuildAssetBundles(outputPath, BuildAssetBundleOptions.ChunkBasedCompression | BuildAssetBundleOptions.IgnoreTypeTreeChanges, BuildTarget);
             AssetDatabase.Refresh();
-            postprocessors.ToList().ForEach(x => x.OnPostprocessBuildAssetBundle(this.BuildTarget, outputPath));
+            postprocessors.ToList().ForEach(x => x.OnPostprocessBuildAssetBundle(BuildTarget, outputPath));
             AssetDatabase.Refresh();
         }
 
@@ -157,7 +157,7 @@ namespace SimpleBuild {
         /// </summary>
         /// <returns>出力先パス</returns>
         private string DeterminateOutputPath() {
-            return string.Format(OUTPUT_PATH_FORMAT, OUTPUT_DIRECTORY_MAP[this.BuildTarget]);
+            return string.Format(OutputPathFormat, OutputDirectoryMap[BuildTarget]);
         }
 
         /// <summary>
