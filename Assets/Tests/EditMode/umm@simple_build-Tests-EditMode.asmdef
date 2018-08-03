@@ -1,7 +1,6 @@
 {
     "name": "umm@simple_build-Tests-EditMode",
     "references": [
-        "umm@simple_build",
         "umm@simple_build-Editor"
     ],
     "optionalUnityReferences": [
