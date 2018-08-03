@@ -18,6 +18,16 @@ namespace SimpleBuild {
         private const string EnvironmentVariableBuildDevelopment = "BUILD_DEVELOPMENT";
 
         /// <summary>
+        /// 環境変数: プロファイラに接続するかどうか
+        /// </summary>
+        private const string EnvironmentVariableConnectWithProfiler = "CONNECT_WITH_PROFILER";
+
+        /// <summary>
+        /// 環境変数: デバッグを許可するかどうか
+        /// </summary>
+        private const string EnvironmentVariableAllowDebugging = "ALLOW_DEBUGGING";
+
+        /// <summary>
         /// BuildTarget と BuildTargetGroup のディクショナリ
         /// </summary>
         private static readonly Dictionary<BuildTarget, BuildTargetGroup> BuildTargetGroupMap = new Dictionary<BuildTarget, BuildTargetGroup>() {
@@ -106,8 +116,14 @@ namespace SimpleBuild {
             }
             if (EditorUserBuildSettings.development) {
                 options.options |= BuildOptions.Development;
-                options.options |= BuildOptions.ConnectWithProfiler;
-                options.options |= BuildOptions.AllowDebugging;
+                if (Environment.GetEnvironmentVariable(EnvironmentVariableConnectWithProfiler) != "false")
+                {
+                    options.options |= BuildOptions.ConnectWithProfiler;
+                }
+                if (Environment.GetEnvironmentVariable(EnvironmentVariableAllowDebugging) != "false")
+                {
+                    options.options |= BuildOptions.AllowDebugging;
+                }
             }
             options.options |= BuildOptions.CompressWithLz4;
             BuildPipeline.BuildPlayer(options);
