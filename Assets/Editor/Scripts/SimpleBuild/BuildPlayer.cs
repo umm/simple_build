@@ -20,12 +20,12 @@ namespace SimpleBuild {
         /// <summary>
         /// 環境変数: プロファイラに接続するかどうか
         /// </summary>
-        private const string EnvironmentVariableConnectWithProfiler = "CONNECT_WITH_PROFILER";
+        private const string EnvironmentVariableBuildConnectWithProfiler = "BUILD_CONNECT_WITH_PROFILER";
 
         /// <summary>
         /// 環境変数: デバッグを許可するかどうか
         /// </summary>
-        private const string EnvironmentVariableAllowDebugging = "ALLOW_DEBUGGING";
+        private const string EnvironmentVariableBuildAllowDebugging = "BUILD_ALLOW_DEBUGGING";
 
         /// <summary>
         /// BuildTarget と BuildTargetGroup のディクショナリ
@@ -116,11 +116,11 @@ namespace SimpleBuild {
             }
             if (EditorUserBuildSettings.development) {
                 options.options |= BuildOptions.Development;
-                if (Environment.GetEnvironmentVariable(EnvironmentVariableConnectWithProfiler) != "false")
+                if (Environment.GetEnvironmentVariable(EnvironmentVariableBuildConnectWithProfiler) != "false")
                 {
                     options.options |= BuildOptions.ConnectWithProfiler;
                 }
-                if (Environment.GetEnvironmentVariable(EnvironmentVariableAllowDebugging) != "false")
+                if (Environment.GetEnvironmentVariable(EnvironmentVariableBuildAllowDebugging) != "false")
                 {
                     options.options |= BuildOptions.AllowDebugging;
                 }
