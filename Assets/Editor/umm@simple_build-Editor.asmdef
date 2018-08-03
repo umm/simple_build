@@ -1,7 +1,6 @@
 {
     "name": "umm@simple_build-Editor",
     "references": [
-        "umm@simple_build"
     ],
     "optionalUnityReferences": [],
     "includePlatforms": [
