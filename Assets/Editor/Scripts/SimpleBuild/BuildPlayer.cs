@@ -115,17 +115,17 @@ namespace SimpleBuild {
                 Directory.CreateDirectory(options.locationPathName);
             }
             if (EditorUserBuildSettings.development) {
-                options.options |= BuildOptions.Development;
+                options.options |= UnityEditor.BuildOptions.Development;
                 if (Environment.GetEnvironmentVariable(EnvironmentVariableBuildConnectWithProfiler) != "false")
                 {
-                    options.options |= BuildOptions.ConnectWithProfiler;
+                    options.options |= UnityEditor.BuildOptions.ConnectWithProfiler;
                 }
                 if (Environment.GetEnvironmentVariable(EnvironmentVariableBuildAllowDebugging) != "false")
                 {
-                    options.options |= BuildOptions.AllowDebugging;
+                    options.options |= UnityEditor.BuildOptions.AllowDebugging;
                 }
             }
-            options.options |= BuildOptions.CompressWithLz4;
+            options.options |= UnityEditor.BuildOptions.CompressWithLz4;
             BuildPipeline.BuildPlayer(options);
         }
 
