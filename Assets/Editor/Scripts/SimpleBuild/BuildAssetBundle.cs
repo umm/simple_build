@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using UnityEditor;
 using UnityEditor.Build;
 using UnityEngine;
+using AssetBundle = SimpleBuild.BuildOptions.AssetBundle;
+
 // ReSharper disable UseNullPropagation
 
 namespace SimpleBuild {
@@ -144,9 +145,18 @@ namespace SimpleBuild {
             var preprocessors = LoadProcessors<IPreprocessBuildAssetBundle>();
             var postprocessors = LoadProcessors<IPostprocessBuildAssetBundle>();
 
+            var buildAssetBundleOptions =
+                BuildAssetBundleOptions.None
+                | BuildAssetBundleOptions.ChunkBasedCompression
+                | BuildAssetBundleOptions.IgnoreTypeTreeChanges;
+            if (AssetBundle.ShouldForceRebuildAssetBundles())
+            {
+                buildAssetBundleOptions |= BuildAssetBundleOptions.ForceRebuildAssetBundle;
+            }
+
             preprocessors.ToList().ForEach(x => x.OnPreprocessBuildAssetBundle(BuildTarget, outputPath));
             AssetDatabase.Refresh();
-            BuildPipeline.BuildAssetBundles(outputPath, BuildAssetBundleOptions.ChunkBasedCompression | BuildAssetBundleOptions.IgnoreTypeTreeChanges, BuildTarget);
+            BuildPipeline.BuildAssetBundles(outputPath, buildAssetBundleOptions, BuildTarget);
             AssetDatabase.Refresh();
             postprocessors.ToList().ForEach(x => x.OnPostprocessBuildAssetBundle(BuildTarget, outputPath));
             AssetDatabase.Refresh();
@@ -172,7 +182,6 @@ namespace SimpleBuild {
                 .SelectMany(x => x.GetTypes())
                 .Where(x => typeof(T).IsAssignableFrom(x) && x.IsClass && !x.IsAbstract)
                 .Select(x => (T)Activator.CreateInstance(x))
-                .Where(x => x != null)
                 .OrderBy(x => x.callbackOrder);
         }
 
