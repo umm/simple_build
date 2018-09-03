@@ -12,8 +12,8 @@ namespace SimpleBuild.BuildOptions
         public static bool ShouldForceRebuildAssetBundles()
         {
             return
-                Environment.GetEnvironmentVariable(EnvironmentVariableBuildAssetBundleForceRebuild) != "false"
-                && Menu.GetChecked(MenuItemNameForceRebuild);
+                Environment.GetEnvironmentVariable(EnvironmentVariableBuildAssetBundleForceRebuild) == "true"
+                || Menu.GetChecked(MenuItemNameForceRebuild);
         }
 
         [MenuItem(MenuItemNameForceRebuild)]
