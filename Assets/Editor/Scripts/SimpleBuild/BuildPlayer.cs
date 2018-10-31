@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using UnityEditor;
 using UnityEngine;
 
@@ -10,12 +11,23 @@ namespace SimpleBuild {
     /// <summary>
     /// 実機ビルドの構築
     /// </summary>
-    public class BuildPlayer {
+    public class BuildPlayer
+    {
+
+        /// <summary>
+        /// 出力先ディレクトリ名
+        /// </summary>
+        private const string OutputDirectoryName = "Build";
 
         /// <summary>
         /// 環境変数: 開発ビルドかどうか
         /// </summary>
         private const string EnvironmentVariableBuildDevelopment = "BUILD_DEVELOPMENT";
+
+        /// <summary>
+        /// 環境変数: クリーンビルドするかどうか
+        /// </summary>
+        private const string EnvironmentVariableBuildClean = "BUILD_CLEAN";
 
         /// <summary>
         /// 環境変数: プロファイラに接続するかどうか
@@ -59,7 +71,7 @@ namespace SimpleBuild {
         /// <summary>
         /// ビルドターゲット
         /// </summary>
-        public BuildTarget BuildTarget {
+        private BuildTarget BuildTarget {
             get {
                 if (buildTarget == default(BuildTarget)) {
                     buildTarget = EditorUserBuildSettings.activeBuildTarget;
@@ -84,6 +96,7 @@ namespace SimpleBuild {
         /// iOS 向けビルドを実行する
         /// </summary>
         /// <remarks>Jenkins などの CI ツールからのキックを想定してサフィックスをつけています。</remarks>
+        // ReSharper disable once UnusedMember.Global
         public static void Run_iOS() {
             new BuildPlayer() {
                 BuildTarget = BuildTarget.iOS,
@@ -94,6 +107,7 @@ namespace SimpleBuild {
         /// Android 向けビルドを実行する
         /// </summary>
         /// <remarks>Jenkins などの CI ツールからのキックを想定してサフィックスをつけています。</remarks>
+        // ReSharper disable once UnusedMember.Global
         public static void Run_Android() {
             new BuildPlayer() {
                 BuildTarget = BuildTarget.Android,
@@ -104,28 +118,42 @@ namespace SimpleBuild {
         /// ビルドを実行する
         /// </summary>
         private void Execute() {
-            EditorUserBuildSettings.development = Environment.GetEnvironmentVariable(EnvironmentVariableBuildDevelopment) == "true";
+            EditorUserBuildSettings.development = Environment.GetEnvironmentVariable(EnvironmentVariableBuildDevelopment) != "false";
             var options = new BuildPlayerOptions {
                 target = BuildTarget,
                 targetGroup = BuildTargetGroupMap[BuildTarget],
-                locationPathName = DeterminateOuputPath(),
+                locationPathName = DeterminateOutputPath(),
                 scenes = EditorBuildSettings.scenes.Select(x => x.path).ToArray()
             };
             if (ShouldCreateDirectoryMap[BuildTarget] && !Directory.Exists(options.locationPathName)) {
                 Directory.CreateDirectory(options.locationPathName);
             }
+
+            var sb = new StringBuilder();
             if (EditorUserBuildSettings.development) {
-                options.options |= UnityEditor.BuildOptions.Development;
+                options.options |= BuildOptions.Development;
+                sb.Append(" Development");
+                // default: ConnectWithProfiler 設定 / BUILD_CONNECT_WITH_PROFILER=false で解除
                 if (Environment.GetEnvironmentVariable(EnvironmentVariableBuildConnectWithProfiler) != "false")
                 {
-                    options.options |= UnityEditor.BuildOptions.ConnectWithProfiler;
+                    options.options |= BuildOptions.ConnectWithProfiler;
+                    sb.Append(" ConnectWithProfiler");
                 }
+                // default: AllowDebugging 設定 / BUILD_ALLOW_DEBUGGING=false で解除
                 if (Environment.GetEnvironmentVariable(EnvironmentVariableBuildAllowDebugging) != "false")
                 {
-                    options.options |= UnityEditor.BuildOptions.AllowDebugging;
+                    options.options |= BuildOptions.AllowDebugging;
+                    sb.Append(" AllowDebugging");
+                }
+                // default: Append 設定 / BUILD_CLEAN=true で Replace 設定
+                if (Environment.GetEnvironmentVariable(EnvironmentVariableBuildClean) != "true")
+                {
+                    options.options |= BuildOptions.AcceptExternalModificationsToPlayer;
+                    sb.Append(" AcceptExternalModificationsToPlayer");
                 }
             }
-            options.options |= UnityEditor.BuildOptions.CompressWithLz4;
+            options.options |= BuildOptions.CompressWithLz4;
+            sb.Append(" CompressWithLz4");
             BuildPipeline.BuildPlayer(options);
         }
 
@@ -133,13 +161,13 @@ namespace SimpleBuild {
         /// 出力先パスを決定する
         /// </summary>
         /// <returns></returns>
-        private string DeterminateOuputPath() {
+        private string DeterminateOutputPath() {
             return new[] {
-                Environment.GetFolderPath(Environment.SpecialFolder.Personal),
-                "Developer", // XXX: ココの決め方をどうにか考えたい。
-                "out",
+                Path.GetDirectoryName(Application.dataPath),
+                OutputDirectoryName,
+                EditorUserBuildSettings.development ? "development" : "production",
                 BuildTarget.ToString(),
-                string.Format("{0}{1}", Application.productName, OutputExtensionMap[BuildTarget]),
+                $"{Application.productName}{OutputExtensionMap[BuildTarget]}",
             }.Aggregate(Path.Combine);
         }
 
