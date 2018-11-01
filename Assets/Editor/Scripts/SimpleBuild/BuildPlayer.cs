@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using UnityEditor;
 using UnityEngine;
 
@@ -129,31 +128,25 @@ namespace SimpleBuild {
                 Directory.CreateDirectory(options.locationPathName);
             }
 
-            var sb = new StringBuilder();
             if (EditorUserBuildSettings.development) {
                 options.options |= UnityEditor.BuildOptions.Development;
-                sb.Append(" Development");
                 // default: ConnectWithProfiler 設定 / BUILD_CONNECT_WITH_PROFILER=false で解除
                 if (Environment.GetEnvironmentVariable(EnvironmentVariableBuildConnectWithProfiler) != "false")
                 {
                     options.options |= UnityEditor.BuildOptions.ConnectWithProfiler;
-                    sb.Append(" ConnectWithProfiler");
                 }
                 // default: AllowDebugging 設定 / BUILD_ALLOW_DEBUGGING=false で解除
                 if (Environment.GetEnvironmentVariable(EnvironmentVariableBuildAllowDebugging) != "false")
                 {
                     options.options |= UnityEditor.BuildOptions.AllowDebugging;
-                    sb.Append(" AllowDebugging");
                 }
                 // default: Append 設定 / BUILD_CLEAN=true で Replace 設定
                 if (Environment.GetEnvironmentVariable(EnvironmentVariableBuildClean) != "true")
                 {
                     options.options |= UnityEditor.BuildOptions.AcceptExternalModificationsToPlayer;
-                    sb.Append(" AcceptExternalModificationsToPlayer");
                 }
             }
             options.options |= UnityEditor.BuildOptions.CompressWithLz4;
-            sb.Append(" CompressWithLz4");
             BuildPipeline.BuildPlayer(options);
         }
 
