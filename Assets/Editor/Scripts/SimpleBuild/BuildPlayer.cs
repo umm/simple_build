@@ -165,8 +165,8 @@ namespace SimpleBuild {
             return new[] {
                 Path.GetDirectoryName(Application.dataPath),
                 OutputDirectoryName,
-                EditorUserBuildSettings.development ? "development" : "production",
                 BuildTarget.ToString(),
+                EditorUserBuildSettings.development ? "development" : "production",
                 $"{Application.productName}{OutputExtensionMap[BuildTarget]}",
             }.Aggregate(Path.Combine);
         }
