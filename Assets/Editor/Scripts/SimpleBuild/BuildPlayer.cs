@@ -141,7 +141,7 @@ namespace SimpleBuild {
                     options.options |= UnityEditor.BuildOptions.AllowDebugging;
                 }
                 // default: Append 設定 / BUILD_CLEAN=true で Replace 設定
-                if (Environment.GetEnvironmentVariable(EnvironmentVariableBuildClean) != "true")
+                if (BuildTarget == BuildTarget.iOS && Environment.GetEnvironmentVariable(EnvironmentVariableBuildClean) != "true")
                 {
                     options.options |= UnityEditor.BuildOptions.AcceptExternalModificationsToPlayer;
                 }
