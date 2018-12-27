@@ -135,9 +135,10 @@ namespace SimpleBuild {
                 {
                     options.options |= UnityEditor.BuildOptions.ConnectWithProfiler;
                 }
-                // default: AllowDebugging 設定 / BUILD_ALLOW_DEBUGGING=false で解除
-                if (Environment.GetEnvironmentVariable(EnvironmentVariableBuildAllowDebugging) != "false")
+                // default: AllowDebugging 設定 / BUILD_ALLOW_DEBUGGING=true で設定
+                if (Environment.GetEnvironmentVariable(EnvironmentVariableBuildAllowDebugging) == "true")
                 {
+                    // このoptionはいつくかのiOS buildで linker exceptionを起こすことがあるので注意. (#38)
                     options.options |= UnityEditor.BuildOptions.AllowDebugging;
                 }
                 // default: Append 設定 / BUILD_CLEAN=true で Replace 設定
