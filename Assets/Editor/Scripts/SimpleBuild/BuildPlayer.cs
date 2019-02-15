@@ -24,9 +24,9 @@ namespace SimpleBuild {
         private const string EnvironmentVariableBuildDevelopment = "BUILD_DEVELOPMENT";
 
         /// <summary>
-        /// 環境変数: クリーンビルドするかどうか
+        /// 環境変数: 高速ビルドするかどうか
         /// </summary>
-        private const string EnvironmentVariableBuildClean = "BUILD_CLEAN";
+        private const string EnvironmentVariableBuildFaster = "BUILD_FASTER";
 
         /// <summary>
         /// 環境変数: プロファイラに接続するかどうか
@@ -142,7 +142,7 @@ namespace SimpleBuild {
                     options.options |= UnityEditor.BuildOptions.AllowDebugging;
                 }
                 // default: Append 設定 / BUILD_CLEAN=true で Replace 設定
-                if (BuildTarget == BuildTarget.iOS && Environment.GetEnvironmentVariable(EnvironmentVariableBuildClean) != "true")
+                if (BuildTarget == BuildTarget.iOS && Environment.GetEnvironmentVariable(EnvironmentVariableBuildFaster) == "true")
                 {
                     options.options |= UnityEditor.BuildOptions.AcceptExternalModificationsToPlayer;
                 }
