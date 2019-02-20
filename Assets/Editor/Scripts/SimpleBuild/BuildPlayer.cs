@@ -39,6 +39,11 @@ namespace SimpleBuild {
         private const string EnvironmentVariableBuildAllowDebugging = "BUILD_ALLOW_DEBUGGING";
 
         /// <summary>
+        /// 環境変数: Apple Development Team ID
+        /// </summary>
+        private const string EnvironmentVariableAppleDeveloperTeamID = "APPLE_DEVELOPER_TEAM_ID";
+
+        /// <summary>
         /// BuildTarget と BuildTargetGroup のディクショナリ
         /// </summary>
         private static readonly Dictionary<BuildTarget, BuildTargetGroup> BuildTargetGroupMap = new Dictionary<BuildTarget, BuildTargetGroup>() {
@@ -126,6 +131,12 @@ namespace SimpleBuild {
             };
             if (ShouldCreateDirectoryMap[BuildTarget] && !Directory.Exists(options.locationPathName)) {
                 Directory.CreateDirectory(options.locationPathName);
+            }
+
+            if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable(EnvironmentVariableAppleDeveloperTeamID)))
+            {
+                PlayerSettings.iOS.appleEnableAutomaticSigning = true;
+                PlayerSettings.iOS.appleDeveloperTeamID = Environment.GetEnvironmentVariable(EnvironmentVariableAppleDeveloperTeamID);
             }
 
             if (EditorUserBuildSettings.development) {
