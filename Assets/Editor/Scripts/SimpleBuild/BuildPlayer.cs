@@ -123,6 +123,11 @@ namespace SimpleBuild {
         /// </summary>
         private void Execute() {
             EditorUserBuildSettings.development = Environment.GetEnvironmentVariable(EnvironmentVariableBuildDevelopment) != "false";
+            if (BuildTarget == BuildTarget.Android)
+            {
+                EditorUserBuildSettings.androidBuildSystem = AndroidBuildSystem.Gradle;
+            }
+
             var options = new BuildPlayerOptions {
                 target = BuildTarget,
                 targetGroup = BuildTargetGroupMap[BuildTarget],
