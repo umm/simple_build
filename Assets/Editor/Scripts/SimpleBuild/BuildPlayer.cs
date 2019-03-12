@@ -127,7 +127,7 @@ namespace SimpleBuild {
             {
                 EditorUserBuildSettings.androidBuildSystem = AndroidBuildSystem.Gradle;
                 EditorUserBuildSettings.androidDebugMinification = AndroidMinification.None;
-                EditorUserBuildSettings.androidReleaseMinification = AndroidMinification.None;
+                EditorUserBuildSettings.androidReleaseMinification = AndroidMinification.Proguard;
             }
 
             var options = new BuildPlayerOptions {
