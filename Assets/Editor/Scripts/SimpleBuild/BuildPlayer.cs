@@ -39,6 +39,10 @@ namespace SimpleBuild {
         private const string EnvironmentVariableBuildAllowDebugging = "BUILD_ALLOW_DEBUGGING";
 
         /// <summary>
+        /// 環境変数: Proguard Minification を有効にするかどうか
+        /// </summary>
+        private const string EnvironmentVariableAndroidMinification = "BUILD_ANDROID_MINIFICATION";
+
         /// 環境変数: Apple Development Team ID
         /// </summary>
         private const string EnvironmentVariableAppleDeveloperTeamID = "APPLE_DEVELOPER_TEAM_ID";
@@ -125,9 +129,10 @@ namespace SimpleBuild {
             EditorUserBuildSettings.development = Environment.GetEnvironmentVariable(EnvironmentVariableBuildDevelopment) != "false";
             if (BuildTarget == BuildTarget.Android)
             {
+                var minification = Environment.GetEnvironmentVariable(EnvironmentVariableAndroidMinification) == "true";
                 EditorUserBuildSettings.androidBuildSystem = AndroidBuildSystem.Gradle;
-                EditorUserBuildSettings.androidDebugMinification = AndroidMinification.None;
-                EditorUserBuildSettings.androidReleaseMinification = AndroidMinification.Proguard;
+                EditorUserBuildSettings.androidDebugMinification = minification ? AndroidMinification.Proguard : AndroidMinification.None;
+                EditorUserBuildSettings.androidReleaseMinification = minification ? AndroidMinification.Proguard : AndroidMinification.None;
             }
 
             var options = new BuildPlayerOptions {
