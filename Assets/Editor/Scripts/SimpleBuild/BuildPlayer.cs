@@ -39,6 +39,16 @@ namespace SimpleBuild {
         private const string EnvironmentVariableBuildAllowDebugging = "BUILD_ALLOW_DEBUGGING";
 
         /// <summary>
+        /// 環境変数: Proguard Minification を有効にするかどうか
+        /// </summary>
+        private const string EnvironmentVariableAndroidMinification = "BUILD_ANDROID_MINIFICATION";
+
+        /// <summary>
+        /// 環境変数: Android App Bundle を有効にするかどうか
+        /// </summary>
+        private const string EnvironmentVariableAndroidAppBundle = "BUILD_ANDROID_APP_BUNDLE";
+
+        /// <summary>
         /// 環境変数: Apple Development Team ID
         /// </summary>
         private const string EnvironmentVariableAppleDeveloperTeamID = "APPLE_DEVELOPER_TEAM_ID";
@@ -49,14 +59,6 @@ namespace SimpleBuild {
         private static readonly Dictionary<BuildTarget, BuildTargetGroup> BuildTargetGroupMap = new Dictionary<BuildTarget, BuildTargetGroup>() {
             { BuildTarget.iOS, BuildTargetGroup.iOS },
             { BuildTarget.Android, BuildTargetGroup.Android },
-        };
-
-        /// <summary>
-        /// BuildTarget と出力拡張子のディクショナリ
-        /// </summary>
-        private static readonly Dictionary<BuildTarget, string> OutputExtensionMap = new Dictionary<BuildTarget, string>() {
-            { BuildTarget.iOS, string.Empty },
-            { BuildTarget.Android, ".apk" },
         };
 
         /// <summary>
@@ -125,9 +127,12 @@ namespace SimpleBuild {
             EditorUserBuildSettings.development = Environment.GetEnvironmentVariable(EnvironmentVariableBuildDevelopment) != "false";
             if (BuildTarget == BuildTarget.Android)
             {
+                var minification = Environment.GetEnvironmentVariable(EnvironmentVariableAndroidMinification) == "true";
+                var appBundle = Environment.GetEnvironmentVariable(EnvironmentVariableAndroidAppBundle) == "true";
                 EditorUserBuildSettings.androidBuildSystem = AndroidBuildSystem.Gradle;
-                EditorUserBuildSettings.androidDebugMinification = AndroidMinification.None;
-                EditorUserBuildSettings.androidReleaseMinification = AndroidMinification.Proguard;
+                EditorUserBuildSettings.androidDebugMinification = minification ? AndroidMinification.Proguard : AndroidMinification.None;
+                EditorUserBuildSettings.androidReleaseMinification = minification ? AndroidMinification.Proguard : AndroidMinification.None;
+                EditorUserBuildSettings.buildAppBundle = appBundle;
             }
 
             var options = new BuildPlayerOptions {
@@ -173,13 +178,19 @@ namespace SimpleBuild {
         /// 出力先パスを決定する
         /// </summary>
         /// <returns></returns>
-        private string DeterminateOutputPath() {
+        private string DeterminateOutputPath()
+        {
+            var extension = "";
+            if (BuildTarget == BuildTarget.Android)
+            {
+                extension = Environment.GetEnvironmentVariable(EnvironmentVariableAndroidAppBundle) == "true" ? ".aab" : ".apk";
+            }
             return new[] {
                 Path.GetDirectoryName(Application.dataPath),
                 OutputDirectoryName,
                 BuildTarget.ToString(),
                 EditorUserBuildSettings.development ? "development" : "production",
-                $"{Application.productName}{OutputExtensionMap[BuildTarget]}",
+                $"{Application.productName}{extension}",
             }.Aggregate(Path.Combine);
         }
 
