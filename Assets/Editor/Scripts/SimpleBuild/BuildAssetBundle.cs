@@ -154,6 +154,11 @@ namespace SimpleBuild {
                 buildAssetBundleOptions |= BuildAssetBundleOptions.ForceRebuildAssetBundle;
             }
 
+            if (AssetBundle.ShouldUncompressedAssetBundles())
+            {
+                buildAssetBundleOptions = BuildAssetBundleOptions.UncompressedAssetBundle;
+            }
+
             preprocessors.ToList().ForEach(x => x.OnPreprocessBuildAssetBundle(BuildTarget, outputPath));
             AssetDatabase.Refresh();
             BuildPipeline.BuildAssetBundles(outputPath, buildAssetBundleOptions, BuildTarget);
