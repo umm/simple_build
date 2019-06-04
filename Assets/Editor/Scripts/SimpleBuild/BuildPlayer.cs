@@ -54,6 +54,21 @@ namespace SimpleBuild {
         private const string EnvironmentVariableAppleDeveloperTeamID = "APPLE_DEVELOPER_TEAM_ID";
 
         /// <summary>
+        /// 環境変数: Android SDK のパス
+        /// </summary>
+        private const string EnvironmentVariableAndroidSdkPath = "BUILD_ANDROID_SDK_PATH";
+
+        /// <summary>
+        /// 環境変数: Android NDK のパス
+        /// </summary>
+        private const string EnvironmentVariableAndroidNdkPath = "BUILD_ANDROID_NDK_PATH";
+
+        /// <summary>
+        /// 環境変数: JDK のパス
+        /// </summary>
+        private const string EnvironmentVariableJdkPath = "BUILD_JDK_PATH";
+
+        /// <summary>
         /// BuildTarget と BuildTargetGroup のディクショナリ
         /// </summary>
         private static readonly Dictionary<BuildTarget, BuildTargetGroup> BuildTargetGroupMap = new Dictionary<BuildTarget, BuildTargetGroup>() {
@@ -133,6 +148,19 @@ namespace SimpleBuild {
                 EditorUserBuildSettings.androidDebugMinification = minification ? AndroidMinification.Proguard : AndroidMinification.None;
                 EditorUserBuildSettings.androidReleaseMinification = minification ? AndroidMinification.Proguard : AndroidMinification.None;
                 EditorUserBuildSettings.buildAppBundle = appBundle;
+
+                if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable(EnvironmentVariableAndroidSdkPath)))
+                {
+                    EditorPrefs.SetString("AndroidSdkRoot", Environment.GetEnvironmentVariable(EnvironmentVariableAndroidSdkPath));
+                }
+                if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable(EnvironmentVariableAndroidNdkPath)))
+                {
+                    EditorPrefs.SetString("AndroidNdkRoot", Environment.GetEnvironmentVariable(EnvironmentVariableAndroidNdkPath));
+                }
+                if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable(EnvironmentVariableJdkPath)))
+                {
+                    EditorPrefs.SetString("JdkPath", Environment.GetEnvironmentVariable(EnvironmentVariableJdkPath));
+                }
             }
 
             var options = new BuildPlayerOptions {
