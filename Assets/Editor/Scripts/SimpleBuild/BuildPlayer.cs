@@ -156,6 +156,7 @@ namespace SimpleBuild {
                 if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable(EnvironmentVariableAndroidNdkPath)))
                 {
                     EditorPrefs.SetString("AndroidNdkRoot", Environment.GetEnvironmentVariable(EnvironmentVariableAndroidNdkPath));
+                    EditorPrefs.SetString("AndroidNdkRootR16b", Environment.GetEnvironmentVariable(EnvironmentVariableAndroidNdkPath));
                 }
                 if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable(EnvironmentVariableJdkPath)))
                 {
