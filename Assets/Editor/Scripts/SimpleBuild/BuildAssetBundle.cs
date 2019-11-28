@@ -55,9 +55,7 @@ namespace SimpleBuild {
             { BuildTarget.StandaloneWindows       , "Standalone" },
             { BuildTarget.StandaloneWindows64     , "Standalone" },
             { BuildTarget.StandaloneOSX           , "Standalone" },
-            { BuildTarget.StandaloneLinux         , "Standalone" },
             { BuildTarget.StandaloneLinux64       , "Standalone" },
-            { BuildTarget.StandaloneLinuxUniversal, "Standalone" },
         };
 
         /// <summary>
