@@ -200,7 +200,18 @@ namespace SimpleBuild {
                 }
             }
             options.options |= UnityEditor.BuildOptions.CompressWithLz4;
-            BuildPipeline.BuildPlayer(options);
+
+            // IPostprocessBuildWithReport などとは別に、処理を呼び出したい場合に利用する interface を実装したクラス群を取得
+            var preBuildPlayers = InternalUtility.LoadProcessors<IPreBuildPlayer>();
+            var postBuildPlayers = InternalUtility.LoadProcessors<IPostBuildPlayer>();
+
+            // IPreBuildPlayer を実行
+            preBuildPlayers.ToList().ForEach(x => x.OnPreBuildPlayer(options));
+
+            var buildReport = BuildPipeline.BuildPlayer(options);
+
+            // IPostBuildPlayer を実行
+            postBuildPlayers.ToList().ForEach(x => x.OnPostBuildPlayer(options, buildReport));
         }
 
         /// <summary>

@@ -140,8 +140,8 @@ namespace SimpleBuild {
                 Directory.CreateDirectory(fullPath);
             }
             // BuildPipeline が走る前に取得しておかないと Postprocessor が取得できない
-            var preprocessors = LoadProcessors<IPreprocessBuildAssetBundle>();
-            var postprocessors = LoadProcessors<IPostprocessBuildAssetBundle>();
+            var preprocessors = InternalUtility.LoadProcessors<IPreprocessBuildAssetBundle>();
+            var postprocessors = InternalUtility.LoadProcessors<IPostprocessBuildAssetBundle>();
 
             var buildAssetBundleOptions =
                 BuildAssetBundleOptions.None
@@ -171,21 +171,6 @@ namespace SimpleBuild {
         /// <returns>出力先パス</returns>
         private string DeterminateOutputPath() {
             return string.Format(OutputPathFormat, OutputDirectoryMap[BuildTarget]);
-        }
-
-        /// <summary>
-        /// Reflection を用いて IPreprocessBuildAssetBundle や IPostprocessBuildAssetBundle のインスタンスを読み込む
-        /// </summary>
-        /// <typeparam name="T">IPreprocessBuildAssetBundle, IPostprocessBuildAssetBundle</typeparam>
-        /// <returns>インスタンスのコレクション</returns>
-        private static IEnumerable<T> LoadProcessors<T>() where T : IOrderedCallback {
-            return AppDomain
-                .CurrentDomain
-                .GetAssemblies()
-                .SelectMany(x => x.GetTypes())
-                .Where(x => typeof(T).IsAssignableFrom(x) && x.IsClass && !x.IsAbstract)
-                .Select(x => (T)Activator.CreateInstance(x))
-                .OrderBy(x => x.callbackOrder);
         }
 
     }
