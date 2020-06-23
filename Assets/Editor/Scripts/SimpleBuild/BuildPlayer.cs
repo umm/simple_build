@@ -139,15 +139,24 @@ namespace SimpleBuild {
         /// ビルドを実行する
         /// </summary>
         private void Execute() {
-            EditorUserBuildSettings.development = Environment.GetEnvironmentVariable(EnvironmentVariableBuildDevelopment) != "false";
+            if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable(EnvironmentVariableBuildDevelopment)))
+            {
+                EditorUserBuildSettings.development = Environment.GetEnvironmentVariable(EnvironmentVariableBuildDevelopment) != "false";
+            }
             if (BuildTarget == BuildTarget.Android)
             {
-                var minification = Environment.GetEnvironmentVariable(EnvironmentVariableAndroidMinification) == "true";
-                var appBundle = Environment.GetEnvironmentVariable(EnvironmentVariableAndroidAppBundle) == "true";
+                var minification = true;
+                if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable(EnvironmentVariableAndroidMinification)))
+                {
+                    minification = Environment.GetEnvironmentVariable(EnvironmentVariableAndroidMinification) == "true";
+                }
                 EditorUserBuildSettings.androidBuildSystem = AndroidBuildSystem.Gradle;
                 EditorUserBuildSettings.androidDebugMinification = minification ? AndroidMinification.Proguard : AndroidMinification.None;
                 EditorUserBuildSettings.androidReleaseMinification = minification ? AndroidMinification.Proguard : AndroidMinification.None;
-                EditorUserBuildSettings.buildAppBundle = appBundle;
+                if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable(EnvironmentVariableAndroidAppBundle)))
+                {
+                    EditorUserBuildSettings.buildAppBundle = Environment.GetEnvironmentVariable(EnvironmentVariableAndroidAppBundle) == "true";
+                }
 
                 if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable(EnvironmentVariableAndroidSdkPath)))
                 {
