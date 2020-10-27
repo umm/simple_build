@@ -145,14 +145,7 @@ namespace SimpleBuild {
             }
             if (BuildTarget == BuildTarget.Android)
             {
-                var minification = true;
-                if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable(EnvironmentVariableAndroidMinification)))
-                {
-                    minification = Environment.GetEnvironmentVariable(EnvironmentVariableAndroidMinification) == "true";
-                }
                 EditorUserBuildSettings.androidBuildSystem = AndroidBuildSystem.Gradle;
-                EditorUserBuildSettings.androidDebugMinification = minification ? AndroidMinification.Proguard : AndroidMinification.None;
-                EditorUserBuildSettings.androidReleaseMinification = minification ? AndroidMinification.Proguard : AndroidMinification.None;
                 if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable(EnvironmentVariableAndroidAppBundle)))
                 {
                     EditorUserBuildSettings.buildAppBundle = Environment.GetEnvironmentVariable(EnvironmentVariableAndroidAppBundle) == "true";
