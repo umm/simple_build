@@ -195,11 +195,6 @@ namespace SimpleBuild {
                     // このoptionはいつくかのiOS buildで linker exceptionを起こすことがあるので注意. (#38)
                     options.options |= UnityEditor.BuildOptions.AllowDebugging;
                 }
-                // default: Append 設定 / BUILD_CLEAN=true で Replace 設定
-                if (BuildTarget == BuildTarget.iOS && Environment.GetEnvironmentVariable(EnvironmentVariableBuildFaster) == "true")
-                {
-                    options.options |= UnityEditor.BuildOptions.AcceptExternalModificationsToPlayer;
-                }
             }
             options.options |= UnityEditor.BuildOptions.CompressWithLz4;
 
